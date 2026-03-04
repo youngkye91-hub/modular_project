@@ -1,0 +1,40 @@
+name: Daily Scraper Update
+
+on:
+  schedule:
+    # 매일 한국 시간(KST) 오전 6시에 자동 실행됩니다. (UTC 기준 전날 밤 9시)
+    - cron: '0 21 * * *'
+  workflow_dispatch:
+    # GitHub 사이트에서 수동으로 [Run workflow] 버튼을 눌러 언제든 실행할 수 있도록 허용합니다.
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+    - name: 저장소 코드 불러오기
+      uses: actions/checkout@v3
+
+    - name: 파이썬(Python) 환경 설정
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+
+    - name: 필수 부품(라이브러리) 설치하기
+      run: |
+        python -m pip install --upgrade pip
+        pip install requests beautifulsoup4
+
+    - name: 조달청 OpenAPI 데이터 수집 로봇(scraper.py) 실행
+      run: python scraper.py
+
+    - name: 변경된 새 데이터(data.json) 저장 및 반영하기
+      run: |
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+        git add data.json
+        # 변경된 파일(새로운 공고)이 있을 경우에만 업데이트(commit)를 진행합니다.
+        git diff --quiet && git diff --staged --quiet || (git commit -m "chore: 일일 API 데이터 자동 업데이트" && git push)
