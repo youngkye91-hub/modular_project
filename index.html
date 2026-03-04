@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>건설사업 입찰 공고 일일 수집 보고서</title>
+    <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            margin: 0;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+
+        .header {
+            background: #1a365d;
+            color: #fff;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 26px;
+            font-weight: 700;
+        }
+
+        .header p {
+            margin: 10px 0 0;
+            opacity: 0.8;
+            font-size: 15px;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .category-title {
+            font-size: 24px;
+            color: #1a365d;
+            border-bottom: 2px solid #2b6cb0;
+            padding-bottom: 12px;
+            margin-bottom: 24px;
+            margin-top: 50px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .category-title::before {
+            content: '';
+            display: block;
+            width: 6px;
+            height: 24px;
+            background-color: #2b6cb0;
+            border-radius: 3px;
+        }
+
+        .category-title:first-child {
+            margin-top: 0;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        @media (max-width: 800px) {
+            .card-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            border: 1px solid #edf2f7;
+            border-radius: 8px;
+            padding: 24px;
+            background-color: #fbfbfc;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            border-bottom: 1px dashed #e2e8f0;
+            padding-bottom: 8px;
+        }
+
+        .card h3 {
+            margin: 0 0 16px 0;
+            color: #2b6cb0;
+            font-size: 18px;
+            line-height: 1.4;
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .copy-btn {
+            background-color: #e2e8f0;
+            border: 1px solid #cbd5e0;
+            color: #4a5568;
+            border-radius: 4px;
+            padding: 4px 10px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            flex-shrink: 0;
+            transition: all 0.2s;
+            margin-top: 2px;
+            height: fit-content;
+        }
+
+        .copy-btn:hover {
+            background-color: #cbd5e0;
+            color: #2d3748;
+        }
+
+        .info-row {
+            display: flex;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .info-label {
+            font-weight: 600;
+            width: 100px;
+            flex-shrink: 0;
+            color: #4a5568;
+            line-height: 1.5;
+        }
+
+        .info-value {
+            flex-grow: 1;
+            color: #2d3748;
+            word-break: break-word;
+            line-height: 1.5;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .highlight-star {
+            color: #d69e2e;
+            font-weight: bold;
+            background: #fffff0;
+            padding: 4px 8px;
+            border-radius: 4px;
+            display: inline-block;
+            margin-top: auto;
+            border: 1px solid #f6e05e;
+            font-size: 13px;
+            align-self: flex-start;
+        }
+
+        .tag-list {
+            margin: 8px 0 0 0;
+            padding-left: 20px;
+            color: #4a5568;
+            font-size: 13px;
+        }
+
+        .tag-list li {
+            margin-bottom: 4px;
+        }
+
+        .top3-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        @media (max-width: 900px) {
+            .top3-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .top3-card {
+            background: linear-gradient(to bottom, #ebf8ff, #ffffff);
+            border-top: 4px solid #3182ce;
+            border-radius: 8px;
+            padding: 24px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+            border-left: 1px solid #edf2f7;
+            border-right: 1px solid #edf2f7;
+            border-bottom: 1px solid #edf2f7;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .top3-card h4 {
+            margin: 0 0 12px 0;
+            color: #2b6cb0;
+            font-size: 17px;
+            line-height: 1.4;
+        }
+
+        .reason {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #4a5568;
+            margin: 0;
+            word-break: keep-all;
+        }
+
+        .link-wrap {
+            display: flex;
+            flex-direction: column;
+        }
+
+        a.link-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4px 10px;
+            background-color: #3182ce;
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            border-radius: 4px;
+            font-size: 13px;
+            transition: background-color 0.2s;
+            height: 24px;
+            line-height: 1;
+        }
+
+        a.link-btn:hover {
+            background-color: #2c5282;
+            color: white;
+        }
+
+        .hint-text {
+            font-size: 12px;
+            color: #a0aec0;
+            margin-top: 4px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 10px;
+            font-size: 12px;
+            font-weight: 700;
+            background: #e2e8f0;
+            color: #4a5568;
+            border-radius: 4px;
+        }
+
+        .badge.ing {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+
+        .badge.notice {
+            background: #feebc8;
+            color: #c05621;
+        }
+
+        .badge.plan {
+            background: #e9d8fd;
+            color: #553c9a;
+        }
+
+        .badge.ing-work {
+            background: #bee3f8;
+            color: #2b6cb0;
+        }
+
+        .meta-text {
+            font-size: 13px;
+            color: #718096;
+            font-weight: 600;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 50px;
+            color: #718096;
+            grid-column: 1 / -1;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="header">
+            <h1>건설사업 입찰 및 개발 현황 실시간 대시보드</h1>
+            <p id="last-updated">데이터를 로드하는 중입니다...</p>
+        </div>
+
+        <div class="content">
+
+            <!-- 카테고리 1: 입찰공고 -->
+            <h2 class="category-title">공개 입찰 공고</h2>
+            <div class="card-grid" id="bids-container">
+                <div class="loading">데이터 로딩 중...</div>
+            </div>
+
+            <!-- 카테고리 2: 사전규격 -->
+            <h2 class="category-title">사전규격 공개</h2>
+            <div class="card-grid" id="prespecs-container">
+                <div class="loading">데이터 로딩 중...</div>
+            </div>
+
+            <!-- 카테고리 3: 발주계획 -->
+            <h2 class="category-title">발주 계획 및 예정사업</h2>
+            <div class="card-grid" id="plans-container">
+                <div class="loading">데이터 로딩 중...</div>
+            </div>
+
+            <h2 class="category-title" style="margin-top: 60px;">🏆 오늘 유망 사업 TOP 3</h2>
+            <div class="top3-grid" id="top3-container">
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        async function loadDashboard() {
+            try {
+                // 캐시 방지를 위해 파라미터 추가
+                const response = await fetch('./data.json?t=' + new Date().getTime());
+                const data = await response.json();
+
+                document.getElementById('last-updated').textContent = "기준일: " + data.last_updated + " (최근 6개월 이내 공고 기준) | 대상: 모듈러 등 키워드 및 주요 공기업(LH, SH, GH, IH)";
+
+                renderCards(data.bids, 'bids-container');
+                renderCards(data.pre_specs, 'prespecs-container');
+                renderCards(data.plans, 'plans-container');
+                renderTop3(data.top3, 'top3-container');
+
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                document.getElementById('bids-container').innerHTML = '<div class="loading">데이터를 불러오는데 실패했습니다. (data.json 연결 오류)</div>';
+                document.getElementById('prespecs-container').innerHTML = '';
+                document.getElementById('plans-container').innerHTML = '';
+            }
+        }
+
+        function renderCards(items, containerId) {
+            const container = document.getElementById(containerId);
+            if (!items || items.length === 0) {
+                container.innerHTML = '<div class="loading">조건에 해당하는 공고가 없습니다.</div>';
+                return;
+            }
+
+            let html = '';
+            items.forEach(item => {
+                let tagsHtml = item.tags.map(t => `<li>${t}</li>`).join('');
+                let linkHintHtml = item.link_hint ? `<div class="hint-text">${item.link_hint}</div>` : '';
+                let probabilityHtml = item.probability === '높음'
+                    ? `<div class="highlight-star">⭐ 모듈러 적용 가능성 높음</div>`
+                    : `<div class="info-row"><div class="info-label" style="color: #718096;">모듈러 적용 가능성</div><div class="info-value" style="color: #718096; font-weight: 500;">${item.probability}</div></div>`;
+
+                let copyNumberHtml = item.number && !['미제공', '기준발표건', '연간계획', '보도자료'].includes(item.number)
+                    ? `<button class="copy-btn" style="margin-bottom: 12px; display:block;" onclick="copyToClipboard('${item.number}')">📋 공고번호 복사</button>`
+                    : '';
+
+                let locHtml = item.location ? `<div class="info-row"><div class="info-label">위치</div><div class="info-value">${item.location}</div></div>` : '';
+                let contentHtml = item.content ? `<div class="info-row"><div class="info-label">사업 내용</div><div class="info-value">${item.content}</div></div>` : '';
+
+                // 소스 텍스트 첫 단어 추출 (ex: "나라장터 (G2B) 통합검색" -> "나라장터")
+                let linkLabel = item.source.split(' ')[0] + ' 이동';
+
+                html += `
+        <div class="card">
+            <div class="card-header">
+                <span class="meta-text">공고일: ${item.date} | 공고번호: ${item.number}</span>
+                <span class="badge ${item.status_class}">${item.status}</span>
+            </div>
+            <h3>
+                <span>🔹 ${item.title}</span>
+                <button class="copy-btn" onclick="copyToClipboard('${item.title.replace(/'/g, "\\'")}')">📋 복사</button>
+            </h3>
+            <div class="info-row"><div class="info-label">원문 확인처</div><div class="info-value" style="font-weight:bold; color:#e53e3e;">${item.source}</div></div>
+            <div class="info-row"><div class="info-label">발주처</div><div class="info-value">${item.client}</div></div>
+            ${locHtml}
+            <div class="info-row"><div class="info-label">사업 규모</div><div class="info-value">${item.scale}</div></div>
+            ${contentHtml}
+            <div class="info-row" style="margin-bottom: 12px;">
+                <div class="info-label">검색 링크</div>
+                <div class="info-value link-wrap">
+                    <div><a href="${item.link}" target="_blank" class="link-btn">${linkLabel}</a></div>
+                    ${linkHintHtml}
+                </div>
+            </div>
+            
+            <div style="margin-top:auto;">
+                ${copyNumberHtml}
+                ${probabilityHtml}
+                <ul class="tag-list">
+                    ${tagsHtml}
+                </ul>
+            </div>
+        </div>
+        `;
+            });
+            container.innerHTML = html;
+        }
+
+        function renderTop3(items, containerId) {
+            const container = document.getElementById(containerId);
+            if (!items || items.length === 0) return;
+
+            let html = '';
+            items.forEach(item => {
+                html += `
+        <div class="top3-card">
+            <h4>🏆 ${item.title}</h4>
+            <p class="reason"><strong>이유:</strong> ${item.reason}</p>
+        </div>
+        `;
+            });
+            container.innerHTML = html;
+        }
+
+        function copyToClipboard(text) {
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(text).then(function () {
+                    alert('"' + text + '"\\n클립보드에 복사되었습니다.');
+                }, function (err) {
+                    alert('복사에 실패했습니다: ' + err);
+                });
+            } else {
+                var textArea = document.createElement("textarea");
+                textArea.value = text;
+                textArea.style.position = "fixed";
+                textArea.style.left = "-999999px";
+                textArea.style.top = "-999999px";
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                try {
+                    var successful = document.execCommand('copy');
+                    if (successful) {
+                        alert('"' + text + '"\\n클립보드에 복사되었습니다.');
+                    } else {
+                        alert('복사 권한이 없습니다.');
+                    }
+                } catch (err) {
+                    alert('복사 기능 오류: ' + err);
+                }
+                document.body.removeChild(textArea);
+            }
+        }
+
+        // 화면이 열리면 데이터 로드 실행
+        document.addEventListener('DOMContentLoaded', loadDashboard);
+    </script>
+
+</body>
+
+</html>
